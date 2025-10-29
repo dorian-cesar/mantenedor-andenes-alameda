@@ -49,7 +49,7 @@ export default function Login() {
             setTimeout(() => setNotif({ type: "", message: "" }), 100);
           }
         }
-        router.push("/dashboard");
+        router.replace("/dashboard");
         return;
       }
       setNotif({ type: "error", message: data.mensaje || "Credenciales inválidas" });
