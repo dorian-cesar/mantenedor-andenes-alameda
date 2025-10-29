@@ -42,6 +42,7 @@ export default function Login() {
         if (data.token) {
           try {
             localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.usuario));
             setNotif({ type: "success", message: "Inicio de sesión exitoso" });
             setTimeout(() => setNotif({ type: "", message: "" }), 100);
           } catch (err) {

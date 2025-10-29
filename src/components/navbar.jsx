@@ -3,7 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { LogOut, User } from 'lucide-react';
 
-export default function Nav({ title = "Terminal Alameda", userName = "Usuario" }) {
+export default function Nav({ title = "Terminal Alameda", userName = "Usuario", role = "Administrador" }) {
     const router = useRouter();
 
     const handleLogout = () => {
@@ -25,7 +25,7 @@ export default function Nav({ title = "Terminal Alameda", userName = "Usuario" }
                             </div>
                             <div className="text-sm">
                                 <p className="font-medium text-gray-900">{userName}</p>
-                                <p className="text-gray-500">Administrador</p>
+                                <p className="text-gray-500">{role}</p>
                             </div>
                         </div>
 

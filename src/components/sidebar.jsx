@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard, Users, Settings, BarChart3, FileText,
-    ChevronLeft, ChevronRight, Terminal, Building, Truck,
+    ChevronLeft, ChevronRight, CircleParking, Clock, Truck,
     Calendar, HelpCircle, Menu
 } from 'lucide-react';
 
@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
         {
             name: 'Usuarios y Roles',
             href: '/dashboard/usuarios',
-            icon: Terminal,
+            icon: Users,
         },
         {
             name: 'Vehículos',
@@ -38,12 +38,12 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
         {
             name: 'Andenes',
             href: '/dashboard/andenes',
-            icon: Users,
+            icon: CircleParking,
         },
         {
             name: 'Permanencias',
             href: '/dashboard/permanencias',
-            icon: BarChart3,
+            icon: Clock,
         },
     ];
 
