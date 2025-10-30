@@ -7,6 +7,7 @@ import { Mail, Lock, Eye, EyeOff, Building2, ArrowRight, User, BusFront, CircleP
 
 import Notification from "@/components/notification";
 import SessionHelper from "@/utils/session";
+import {LoginCard1, LoginCard2} from "@/components/cards/loginCard";
 
 export default function Login() {
 
@@ -75,7 +76,7 @@ export default function Login() {
     <div className="min-h-screen flex">
       <Notification type={notif.type} message={notif.message} />
 
-      <div className="flex-1 hidden lg:flex flex-col justify-between p-12 bg-linear-to-br from-blue-600 to-indigo-800 text-white">
+      <div className="flex-1 hidden lg:flex flex-col justify-between p-12 bg-linear-to-br from-gray-600 to-sky-800 text-white">
         <div className="flex items-center gap-6 mb-16">
           <div className="h-20 w-20 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
             <Image
@@ -92,64 +93,19 @@ export default function Login() {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-4 p-4 border rounded-xl">
-            <User />
-            <div>
-              <h3 className="font-semibold">Usuarios</h3>
-              <p className="text-sm text-blue-100">Gestión de usuarios del sistema</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 p-4 border rounded-xl">
-            <BusFront />
-            <div>
-              <h3 className="font-semibold">Buses</h3>
-              <p className="text-sm text-blue-100">Administración de buses</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 p-4 border rounded-xl">
-            <CircleParking />
-            <div>
-              <h3 className="font-semibold">Andenes</h3>
-              <p className="text-sm text-blue-100">Gestión de andenes</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 p-4 border rounded-xl">
-            <Clock />
-            <div>
-              <h3 className="font-semibold">Permanencia</h3>
-              <p className="text-sm text-blue-100">Control de permanencia</p>
-            </div>
-          </div>
+          <LoginCard1 icon={<User />} title={"Usuarios"} description={"Creación de usuarios del sistema"} />
+          <LoginCard1 icon={<BusFront />} title={"Buses"} description={"Administración de buses"} />
+          <LoginCard1 icon={<CircleParking />} title={"Andenes"} description={"Gestión de andenes"} />
+          <LoginCard1 icon={<Clock />} title={"Permanencia"} description={"Control de permanencia"} />
         </div>
 
-        <div className="max-w-md">
-          <div className="flex items-center gap-3 mb-6">
-            <Building2 className="w-8 h-8 text-blue-200" />
-            <h2 className="text-3xl font-bold">SOMOS WIT</h2>
-          </div>
-          <p className="text-lg text-blue-100 mb-4 leading-relaxed">
-            Empresa de desarrollo de productos y soluciones tecnológicas.
-            Especialistas en creación, diseño e implementación de herramientas
-            para optimizar procesos empresariales.
-          </p>
-          <p className="text-blue-100 leading-relaxed">
-            Fortaleza basada en TIC y NTIC para desarrollo profesional y
-            sustentabilidad financiera.
-          </p>
-          <div className="mt-8">
-            <div className="w-16 h-1 bg-blue-300 rounded-full mb-4"></div>
-            <p className="text-blue-200 text-sm">Transformando ideas en soluciones digitales</p>
-          </div>
-        </div>
+        <LoginCard2 />
       </div>
 
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Iniciar Sesión</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Bienvenido</h2>
             <p className="text-gray-600">Ingresa tus credenciales para continuar</p>
           </div>
 
@@ -165,7 +121,7 @@ export default function Login() {
                   type="email"
                   value={correo}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                   placeholder="tu@email.com"
                 />
               </div>
@@ -182,7 +138,7 @@ export default function Login() {
                   type={show ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                  className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                   placeholder="• • • • • • • •"
                 />
                 <button
@@ -203,9 +159,9 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-linear-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+              className="w-full py-3 bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
             >
-              { isLoading ? "Cargando..." : "Iniciar Sesión" }
+              {isLoading ? "Cargando..." : "Iniciar Sesión"}
             </button>
           </form>
 

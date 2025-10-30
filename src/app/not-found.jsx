@@ -50,7 +50,7 @@ export default function NotFound() {
                                 <div className="flex items-start gap-3">
                                     <Search className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
                                     <div className="text-left">
-                                        <p className="text-blue-800 font-medium mb-1">Sugerencias:</p>
+                                        <p className="text-blue-700 font-medium mb-1">Sugerencias:</p>
                                         <ul className="text-blue-700 text-sm space-y-1">
                                             <li>• Verifica la URL en la barra de direcciones</li>
                                             <li>• Navega desde el menú principal</li>
@@ -65,7 +65,7 @@ export default function NotFound() {
                         <div className="space-y-4">
                             <Link
                                 href="/dashboard"
-                                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3.5 px-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
+                                className="w-full bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold py-3.5 px-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
                             >
                                 <Home className="w-5 h-5" />
                                 <span>Ir al Dashboard</span>
