@@ -77,12 +77,16 @@ export default function Nav({ title = "Terminal Alameda" }) {
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden md:flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-2">
-                                <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
                                     <User className="h-4 w-4 text-blue-600" />
                                 </div>
-                                <div className="text-sm">
+                                <div className="text-sm flex flex-col items-center">
                                     <p className="font-medium text-gray-900">{userName}</p>
-                                    <p className="text-gray-500 capitalize">{role.toLowerCase()}</p>
+                                    <p className={
+                                        `${role.toLowerCase() === 'superusuario' 
+                                        ? 'bg-purple-200 text-purple-800'
+                                        : 'bg-blue-200 text-blue-800'} capitalize px-2 py-1 rounded-full font-bold`
+                                        }>{role.toLowerCase()}</p>
                                 </div>
                             </div>
 

@@ -50,8 +50,7 @@ export default function UserModal({ user, onSave, onClose }) {
     return (
         <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg max-w-md w-full">
-                {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b">
+                <div className="flex justify-between items-center p-6 border-b border-gray-400">
                     <h2 className="text-xl font-semibold">
                         {user ? 'Editar Usuario' : 'Nuevo Usuario'}
                     </h2>
@@ -63,9 +62,7 @@ export default function UserModal({ user, onSave, onClose }) {
                     </button>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Nombre */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Nombre Completo
@@ -78,13 +75,12 @@ export default function UserModal({ user, onSave, onClose }) {
                                 value={formData.nombre}
                                 onChange={handleChange}
                                 required
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                                 placeholder="Ej: Juan Pérez"
                             />
                         </div>
                     </div>
 
-                    {/* Correo */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Correo Electrónico
@@ -97,13 +93,12 @@ export default function UserModal({ user, onSave, onClose }) {
                                 value={formData.correo}
                                 onChange={handleChange}
                                 required
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                                 placeholder="Ej: usuario@ejemplo.com"
                             />
                         </div>
                     </div>
 
-                    {/* Contraseña */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             {user ? 'Nueva Contraseña (dejar en blanco para no cambiar)' : 'Contraseña'}
@@ -117,13 +112,12 @@ export default function UserModal({ user, onSave, onClose }) {
                                 onChange={handleChange}
                                 required={!user}
                                 minLength={6}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                                 placeholder="••••••••"
                             />
                         </div>
                     </div>
 
-                    {/* Rol */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Rol
@@ -135,7 +129,7 @@ export default function UserModal({ user, onSave, onClose }) {
                                 value={formData.rol}
                                 onChange={handleChange}
                                 required
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
                             >
                                 <option value="operador">Operador</option>
                                 <option value="administrador">Administrador</option>
@@ -144,19 +138,18 @@ export default function UserModal({ user, onSave, onClose }) {
                         </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex gap-3 pt-4">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="flex-1 py-2 px-4 border-2 border-gray-400 rounded-xl text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="flex-1 py-2 px-4 bg-linear-to-r from-sky-600 to-sky-800 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
                         >
                             {loading ? 'Guardando...' : (user ? 'Actualizar' : 'Crear')}
                         </button>

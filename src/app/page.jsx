@@ -7,7 +7,7 @@ import { Mail, Lock, Eye, EyeOff, Building2, ArrowRight, User, BusFront, CircleP
 
 import Notification from "@/components/notification";
 import SessionHelper from "@/utils/session";
-import {LoginCard1, LoginCard2} from "@/components/cards/loginCard";
+import { LoginCard1, LoginCard2 } from "@/components/cards/loginCard";
 
 export default function Login() {
 
@@ -40,8 +40,15 @@ export default function Login() {
       );
 
       const data = await res.json().catch(() => ({}));
+      console.log(data)
 
       if (res.ok && (data.token || data.status === 200)) {
+        const rol = data.usuario.rol;
+        if (rol !== "superusuario" && rol !== "administrador") {
+          setNotif({ type: "warning", message: "Acceso denegado, contacte un administrador." });
+          setTimeout(() => setNotif({ type: "", message: "" }), 3000);
+          return;
+        }
         if (data.token) {
           const sessionResult = await SessionHelper.loginSession(
             data.token,

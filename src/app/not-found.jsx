@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image"
 import Link from "next/link"
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,18 +12,6 @@ export default function NotFound() {
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-md">
                     <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 text-center">
-                        {/* Logo móvil */}
-                        <div className="lg:hidden flex justify-center mb-8">
-                            <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-blue-600">
-                                <Image
-                                    src="/wit.png"
-                                    alt="WIT Logo"
-                                    width={48}
-                                    height={48}
-                                    className="filter brightness-0 invert"
-                                />
-                            </div>
-                        </div>
 
                         {/* Icono de error */}
                         <div className="flex justify-center mb-6">
