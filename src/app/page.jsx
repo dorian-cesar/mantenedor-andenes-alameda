@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, Building2, ArrowRight, User, BusFront, CircleParking, Clock } from 'lucide-react';
 
 import Notification from "@/components/notification";
+import SessionHelper from "@/utils/session";
 
 export default function Login() {
 
@@ -38,27 +39,33 @@ export default function Login() {
       );
 
       const data = await res.json().catch(() => ({}));
+
       if (res.ok && (data.token || data.status === 200)) {
         if (data.token) {
-          try {
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.usuario));
+          const sessionResult = await SessionHelper.loginSession(
+            data.token,
+            data.usuario
+          );
+
+          if (sessionResult.success) {
             setNotif({ type: "success", message: "Inicio de sesión exitoso" });
-            setTimeout(() => setNotif({ type: "", message: "" }), 100);
-          } catch (err) {
-            setNotif({ type: "error", message: "Error al iniciar sesión" });
-            setTimeout(() => setNotif({ type: "", message: "" }), 100);
+            setTimeout(() => {
+              setNotif({ type: "", message: "" });
+              router.replace("/dashboard");
+            }, 1500);
+          } else {
+            setNotif({ type: "error", message: sessionResult.error });
+            setTimeout(() => setNotif({ type: "", message: "" }), 3000);
           }
         }
-        router.replace("/dashboard");
         return;
       }
       setNotif({ type: "error", message: data.mensaje || "Credenciales inválidas" });
-      setTimeout(() => setNotif({ type: "", message: "" }), 100);
+      setTimeout(() => setNotif({ type: "", message: "" }), 3000);
     } catch (err) {
       console.error("fetch error:", err);
       setNotif({ type: "error", message: "Error al conectar con el servidor" });
-      setTimeout(() => setNotif({ type: "", message: "" }), 100);
+      setTimeout(() => setNotif({ type: "", message: "" }), 3000);
     } finally {
       setIsLoading(false);
     }
@@ -139,101 +146,75 @@ export default function Login() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-            <div className="lg:hidden flex justify-center mb-8">
-              <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-blue-600">
-                <Image
-                  src="/wit.png"
-                  alt="WIT Logo"
-                  width={48}
-                  height={48}
-                  className="filter brightness-0 invert"
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Iniciar Sesión</h2>
+            <p className="text-gray-600">Ingresa tus credenciales para continuar</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Correo Electrónico
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="email"
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                  placeholder="tu@email.com"
                 />
               </div>
             </div>
 
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Bienvenido</h2>
-              <p className="text-gray-600 text-lg">Ingresa a tu cuenta</p>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="password"
+                  type={show ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                  placeholder="• • • • • • • •"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow(!show)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {show ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={correo}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    type={show ? "text" : "password"}
-                    placeholder="• • • • • • • •"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShow(!show)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  >
-                    {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3.5 px-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Iniciando sesión...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Iniciar Sesión</span>
-                    <ArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-center text-gray-500 text-sm">
-                ¿Necesitas ayuda?{" "}
-                <a href="#" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
-                  Contacta al soporte
-                </a>
-              </p>
+            <div className="flex items-center justify-between text-sm">
+              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
-          </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-linear-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+            >
+              { isLoading ? "Cargando..." : "Iniciar Sesión" }
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-gray-600 mt-6">
+            ¿Problemas para acceder?{" "}
+            <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+              Contacta un administrador
+            </a>
+          </p>
         </div>
       </div>
     </div>

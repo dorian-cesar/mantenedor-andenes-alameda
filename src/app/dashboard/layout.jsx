@@ -5,14 +5,10 @@ import Nav from '@/components/navbar';
 
 export default function SecondaryLayout({ children, title = "Terminal Alameda" }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [userName, setUserName] = useState(null);
-    const [role, setRole] = useState(null);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+        if (window.innerWidth >= 1024) {
             setSidebarOpen(true);
-            setUserName(JSON.parse(localStorage.getItem("user"))?.nombre || "Usuario");
-            setRole(JSON.parse(localStorage.getItem("user"))?.rol || "Administrador");
         }
     }, []);
 
@@ -24,7 +20,7 @@ export default function SecondaryLayout({ children, title = "Terminal Alameda" }
             />
 
             <div className="flex-1 flex flex-col overflow-hidden">
-                <Nav title={title} userName={userName} role={role} />
+                <Nav title={title} />
 
                 <main className="flex-1 overflow-y-auto p-6">
                     {children}

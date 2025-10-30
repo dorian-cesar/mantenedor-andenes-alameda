@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
             icon: LayoutDashboard,
         },
         {
-            name: 'Usuarios y Roles',
+            name: 'Usuarios',
             href: '/dashboard/usuarios',
             icon: Users,
         },
@@ -67,7 +67,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
                 bg-white border-r border-gray-200
                 transition-all duration-300 ease-in-out
                 ${sidebarOpen ? 'w-64 translate-x-0' : 'w-0 lg:w-20 -translate-x-full lg:translate-x-0'}
-                h-screen overflow-hidden lg:overflow-visible
+                h-screen overflow-hidden lg:overflow-visible shadow-2xl
             `}>
 
                 <div className={`
@@ -108,11 +108,15 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
                                     <Link
                                         key={item.name}
                                         href={item.href}
+                                        onMouseDown={(e) => {
+                                            e.currentTarget.blur();
+                                        }}
                                         className={`
-                                            flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group
-                                            ${isActive ? 'bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'}
-                                            ${!sidebarOpen ? 'justify-center lg:justify-start' : ''}
-                                        `}
+                                      flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group
+                                      ${isActive ? 'bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'}
+                                      ${!sidebarOpen ? 'justify-center lg:justify-start' : ''}
+                                      focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+                                    `}
                                     >
                                         <div className={`
                                             p-2 rounded-lg transition-colors shrink-0
