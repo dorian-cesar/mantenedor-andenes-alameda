@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
         <>
             <div className={`
                 fixed lg:static inset-y-0 left-0 z-40
-                bg-linear-to-br from-sky-600 to-sky-800
+                bg-linear-to-br from-sky-700 to-sky-950
                 transition-all duration-300 ease-in-out
                 ${sidebarOpen ? 'w-64 translate-x-0' : 'w-0 lg:w-20 -translate-x-full lg:translate-x-0'}
                 h-screen overflow-hidden lg:overflow-visible shadow-2xl
@@ -175,7 +175,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
             {/* Botón móvil para abrir sidebar */}
             <button
                 onClick={toggleSidebar}
-                className="lg:hidden fixed bottom-6 right-6 z-50 p-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200"
+                className={`lg:hidden fixed top-20 left-6 z-50 p-4 bg-linear-to-br from-sky-700 to-sky-950 text-white rounded-full shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200 ${sidebarOpen ? "hidden" : ""}`}
                 aria-label="Abrir sidebar"
             >
                 <Menu className="h-5 w-5" />
