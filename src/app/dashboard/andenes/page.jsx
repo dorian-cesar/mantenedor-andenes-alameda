@@ -1,107 +1,123 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Users, Edit, Trash2 } from 'lucide-react';
-import UserService from '@/services/user.service';
-import Notification from '@/components/notification';
-import UserModal from '@/components/modals/userModal';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, Box } from "lucide-react";
+import AndenService from "@/services/anden.service";
+import Notification from "@/components/notification";
+import AndenModal from "@/components/modals/andenModal";
 
-export default function UsuariosPage() {
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+export default function AndenesPage() {
+  const [andenes, setAndenes] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [notification, setNotification] = useState({ type: '', message: '' });
+  const [editing, setEditing] = useState(null);
+  const [notification, setNotification] = useState({ type: "", message: "" });
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const andenesPerPage = 6;
 
   useEffect(() => {
-    loadUsers();
+    loadAndenes();
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter(user =>
-      user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.rol.toLowerCase().includes(searchTerm.toLowerCase())
+    const f = andenes.filter(a =>
+      a.numero.toString().includes(searchTerm) ||
+      a.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (a.estado || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredUsers(filtered);
-  }, [searchTerm, users]);
+    setFiltered(f);
+    setCurrentPage(1);
+  }, [searchTerm, andenes]);
 
-  const loadUsers = async () => {
+  const loadAndenes = async () => {
     try {
       setLoading(true);
-      const usersData = await UserService.getUsers();
-      setUsers(usersData);
-      setFilteredUsers(usersData);
-    } catch (error) {
-      showNotification('error', 'Error al cargar usuarios: ' + error.message);
+      const data = await AndenService.getAndenes();
+      setAndenes(data);
+      setFiltered(data);
+    } catch (err) {
+      notify("error", "Error al cargar andenes: " + (err.message || err));
     } finally {
       setLoading(false);
     }
   };
 
-  const showNotification = (type, message) => {
+  const notify = (type, message) => {
     setNotification({ type, message });
-    setTimeout(() => setNotification({ type: '', message: '' }), 5000);
+    setTimeout(() => setNotification({ type: "", message: "" }), 4500);
   };
 
-  const handleCreateUser = () => {
-    setEditingUser(null);
+  const handleCreate = () => {
+    setEditing(null);
     setShowModal(true);
   };
 
-  const handleEditUser = (user) => {
-    setEditingUser(user);
+  const handleEdit = (anden) => {
+    setEditing(anden);
     setShowModal(true);
   };
 
-  const handleDeleteUser = async (user) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar al usuario ${user.nombre}?`)) {
-      try {
-        // await UserService.deleteUser(user.id);
-        // loadUsers();
-        showNotification('success', 'Usuario eliminado correctamente');
-      } catch (error) {
-        showNotification('error', 'Error al eliminar usuario: ' + error.message);
-      }
+  const handleDelete = async (anden) => {
+    if (!confirm(`¿Eliminar anden ${anden.numero} - ${anden.nombre}?`)) return;
+    try {
+      // si tienes backend: await AndenService.deleteAnden(anden.id)
+      await AndenService.deleteAndenMock(anden.id); // mock
+      notify("success", "Andén eliminado correctamente");
+      loadAndenes();
+    } catch (err) {
+      notify("error", "Error al eliminar: " + err.message);
     }
   };
 
-  const handleSaveUser = async (userData) => {
+  const handleSave = async (andenData) => {
     try {
-      if (editingUser) {
-        await UserService.updateUser(editingUser.id, userData);
-        showNotification('success', 'Usuario actualizado correctamente');
+      if (editing) {
+        // await AndenService.updateAnden(editing.id, andenData);
+        await AndenService.updateAndenMock(editing.id, andenData);
+        notify("success", "Andén actualizado");
       } else {
-        await UserService.createUser(userData);
-        showNotification('success', 'Usuario creado correctamente');
+        // await AndenService.createAnden(andenData);
+        await AndenService.createAndenMock(andenData);
+        notify("success", "Andén creado");
       }
       setShowModal(false);
-      loadUsers();
-    } catch (error) {
-      showNotification('error', error.message);
+      loadAndenes();
+    } catch (err) {
+      notify("error", err.message || "Error al guardar");
     }
   };
 
+  // pagination helpers
+  const indexOfLast = currentPage * andenesPerPage;
+  const indexOfFirst = indexOfLast - andenesPerPage;
+  const currentItems = filtered.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / andenesPerPage));
+
+  const prevPage = () => setCurrentPage(p => Math.max(1, p - 1));
+  const nextPage = () => setCurrentPage(p => Math.min(totalPages, p + 1));
+
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <Notification type={notification.type} message={notification.message} />
 
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <Users className="h-8 w-8 text-blue-600" />
+          <Box className="h-8 w-8 text-green-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
-            <p className="text-gray-600">Administra los usuarios del sistema</p>
+            <h1 className="text-2xl font-bold text-gray-900">Gestión de Andenes</h1>
+            <p className="text-gray-600">Administra andenes (plataformas) del terminal</p>
           </div>
         </div>
+
         <button
-          onClick={handleCreateUser}
-          className="flex items-center gap-2 bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+          onClick={handleCreate}
+          className="flex items-center gap-2 bg-linear-to-r from-emerald-500 to-emerald-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-200"
         >
           <Plus className="h-4 w-4" />
-          Nuevo Usuario
+          Nuevo Andén
         </button>
       </div>
 
@@ -110,99 +126,128 @@ export default function UsuariosPage() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <input
             type="text"
-            placeholder="Buscar usuarios..."
+            placeholder="Buscar por número, nombre o estado..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full pl-11 pr-4 py-3 border-2 border-gray-400 rounded-xl focus:border-green-400 focus:ring-4 focus:ring-green-50 outline-none transition-all duration-200"
           />
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-lg shadow">
-        {loading ? (
-          <div className="flex justify-center items-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Correo
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rol
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fecha de Creación
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{user.nombre}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.correo}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.rol === 'superusuario'
-                        ? 'bg-purple-200 text-purple-800'
-                        : user.rol === 'administrador'
-                          ? 'bg-blue-200 text-blue-800'
-                          : 'bg-gray-300 text-black'
-                        }`}>
-                        {user.rol}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.creado_en).toLocaleDateString('es-ES')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          <Edit className="h-5 w-5 cursor-pointer" />
+      <div className="space-y-4">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+          {loading ? (
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
+            </div>
+          ) : (
+            <>
+              {/* Tabla para desktop */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">#</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Nombre</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Estado</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Descripción</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Creado</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentItems.map(a => (
+                      <tr key={a.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{a.numero}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{a.nombre}</td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${a.estado === "activo" ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-800"}`}>
+                            {a.estado}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{a.descripcion || "-"}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(a.creado_en).toLocaleDateString("es-ES")}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEdit(a)} className="text-green-600 hover:text-green-900 bg-green-200 p-2 rounded-full">
+                              <Edit className="h-5 w-5" />
+                            </button>
+                            <button onClick={() => handleDelete(a)} className="text-red-600 hover:text-red-900 bg-red-100 p-2 rounded-full">
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Cards para móvil */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {currentItems.map(a => (
+                  <div key={a.id} className="p-4 bg-white">
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900">Andén {a.numero} — {a.nombre}</div>
+                            <div className="text-xs text-gray-500 truncate">{a.descripcion}</div>
+                          </div>
+                          <div>
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${a.estado === "activo" ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-800"}`}>
+                              {a.estado}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">Creado: {new Date(a.creado_en).toLocaleDateString("es-ES")}</div>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-2 ml-2">
+                        <button onClick={() => handleEdit(a)} className="p-2 rounded-md bg-green-100 hover:bg-green-200">
+                          <Edit className="h-4 w-4 text-green-600" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteUser(user)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Trash2 className="h-5 w-5 cursor-pointer" />
+                        <button onClick={() => handleDelete(a)} className="p-2 rounded-md bg-red-100 hover:bg-red-200">
+                          <Trash2 className="h-4 w-4 text-red-600" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-
-            {filteredUsers.length === 0 && (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No se encontraron usuarios</p>
               </div>
-            )}
+
+              {filtered.length === 0 && (
+                <div className="text-center py-8">
+                  <Box className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No se encontraron andenes</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Paginación */}
+        {filtered.length > 0 && (
+          <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-3 mt-4">
+            <div className="flex items-center gap-2">
+              <button onClick={prevPage} disabled={currentPage === 1} className="bg-linear-to-tr from-gray-400 to-gray-500 text-white p-3 rounded-xl disabled:opacity-50">
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="text-sm text-gray-600 font-medium">Página {currentPage} de {totalPages}</span>
+              <button onClick={nextPage} disabled={currentPage === totalPages} className="bg-linear-to-tr from-gray-400 to-gray-500 text-white p-3 rounded-xl disabled:opacity-50">
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="hidden sm:block text-sm text-gray-500">{filtered.length} resultados</div>
           </div>
         )}
       </div>
 
       {showModal && (
-        <UserModal
-          user={editingUser}
-          onSave={handleSaveUser}
+        <AndenModal
+          anden={editing}
+          onSave={handleSave}
           onClose={() => setShowModal(false)}
         />
       )}

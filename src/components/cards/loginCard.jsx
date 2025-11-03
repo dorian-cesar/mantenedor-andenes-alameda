@@ -1,6 +1,6 @@
 export function LoginCard1({ icon, title, description }) {
     return (
-        <div className="flex items-center gap-4 p-4 border rounded-xl">
+        <div className="flex items-center gap-4 p-4 border rounded-xl bg-[#FFFFFF14]">
             {icon}
             <div>
                 <h3 className="font-semibold">{title}</h3>
@@ -12,7 +12,7 @@ export function LoginCard1({ icon, title, description }) {
 
 export function LoginCard2() {
     return (
-        <div className="flex items-center gap-4 p-4 border rounded-xl">
+        <div className="flex items-center gap-4 p-4 border rounded-xl bg-[#FFFFFF14]">
         <div className="max-w-md">
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-3xl font-bold">SOMOS WIT</h2>

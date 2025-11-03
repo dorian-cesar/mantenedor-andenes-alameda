@@ -21,7 +21,7 @@ export function DashboardCard1({ icon, title, data, color = "blue" }) {
 
             <div className="w-full flex">
                 <p
-                    className="text-4xl font-bold"
+                    className="text-3xl font-bold"
                 >
                     {data}
                 </p>
