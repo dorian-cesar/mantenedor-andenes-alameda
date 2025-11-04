@@ -112,7 +112,7 @@ export default function UsuariosPage() {
         <div className="flex items-center gap-3">
           <Users className="h-8 w-8 text-blue-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
             <p className="text-gray-600">Administra los usuarios del sistema</p>
           </div>
         </div>

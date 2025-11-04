@@ -80,7 +80,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
                         {sidebarOpen && (
                             <div className="flex flex-col items-center">
                                 <div>
-                                    <h2 className="font-bold text-white text-xl">Navegación</h2>
+                                    <h2 className="font-bold text-white text-2xl">Menú</h2>
                                 </div>
                             </div>
                         )}
@@ -112,19 +112,19 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
                                         }}
                                         className={`
                                       flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group
-                                      ${isActive ? 'bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700' : 'text-white hover:bg-gray-50 hover:text-gray-900'}
+                                      ${isActive ? 'bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 text-sky-700' : 'text-white hover:bg-gray-50 hover:text-gray-900'}
                                       ${!sidebarOpen ? 'justify-center lg:justify-start' : ''}
                                       focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
                                     `}
                                     >
                                         <div className={`
                                             p-2 rounded-lg transition-colors shrink-0
-                                            ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600'}
+                                            ${isActive ? 'bg-blue-100 text-sky-600' : 'bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-sky-600'}
                                         `}>
                                             <Icon className="h-4 w-4" />
                                         </div>
 
-                                        {sidebarOpen && <span className="font-medium text-sm">{item.name}</span>}
+                                        {sidebarOpen && <span className="font-medium">{item.name}</span>}
                                     </Link>
                                 );
                             })}
@@ -156,7 +156,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
                                             <Icon className="h-4 w-4" />
                                         </div>
 
-                                        {sidebarOpen && <span className="font-medium text-sm">{item.name}</span>}
+                                        {sidebarOpen && <span className="font-medium">{item.name}</span>}
                                     </Link>
                                 );
                             })}
@@ -175,7 +175,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
             {/* Botón móvil para abrir sidebar */}
             <button
                 onClick={toggleSidebar}
-                className={`lg:hidden fixed top-20 left-6 z-50 p-4 bg-linear-to-br from-sky-700 to-sky-950 text-white rounded-full shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200 ${sidebarOpen ? "hidden" : ""}`}
+                className={`lg:hidden fixed bottom-8 left-8 z-50 p-4 bg-linear-to-br from-sky-700 to-sky-950 text-white rounded-full shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200 ${sidebarOpen ? "hidden" : ""}`}
                 aria-label="Abrir sidebar"
             >
                 <Menu className="h-5 w-5" />

@@ -24,7 +24,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center justify-between w-full">
                     <div className=" w-full flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-balance">Panel Principal</h1>
+                            <h2 className="text-3xl font-bold text-balance">Panel Principal</h2>
                             <p className="text-gray-300 mt-2">Bienvenido, gestiona todas tus operaciones desde aquí</p>
                         </div>
                         <div className="text-right">
@@ -43,7 +43,7 @@ export default function DashboardPage() {
                     <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
                         <DashboardCard1 icon={<TrendingUp className="h-6 w-6" />} title={"Buses en terminal"} data={"12"} color={"red"} />
                         <DashboardCard1 icon={<AlertCircle className="h-6 w-6" />} title={"Andenes ocupados"} data={"12"} color={"green"} />
-                        <DashboardCard1 icon={<CheckCircle className="h-6 w-6" />} title={"Tareas completadas"} data={"12"} color={"emerald"} />
+                        <DashboardCard1 icon={<CheckCircle className="h-6 w-6" />} title={"Permanencias cobradas"} data={"12"} color={"emerald"} />
                     </div>
                 </div>
             </div>

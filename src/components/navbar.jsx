@@ -92,7 +92,7 @@ export default function Nav({ title = "Terminal de Buses" }) {
 
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 bg-linear-to-br from-gray-900 to-sky-800 hover:from-black hover:to-gray-600 text-white font-semibold py-2 px-4 rounded-xl focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 shadow-lg shadow-red-500/25 cursor-pointer"
+                                className="flex items-center gap-2 bg-linear-to-br from-gray-900 to-sky-800 hover:from-black hover:to-gray-600 text-white font-semibold py-2 px-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg cursor-pointer"
                             >
                                 <LogOut className="h-4 w-4" />
                                 <span className="hidden sm:block">Cerrar Sesión</span>

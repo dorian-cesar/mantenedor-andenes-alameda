@@ -104,7 +104,7 @@ export default function VehiculosPage() {
         <div className="flex items-center gap-3">
           <Truck className="h-8 w-8 text-orange-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Gestión de Vehículos</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Gestión de Vehículos</h1>
             <p className="text-gray-600">Administra los buses del terminal</p>
           </div>
         </div>
