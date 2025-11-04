@@ -24,13 +24,18 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center justify-between w-full">
                     <div className=" w-full flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-balance">Terminal de Buses - Panel Principal</h1>
+                            <h1 className="text-3xl md:text-4xl font-bold text-balance">Panel Principal</h1>
                             <p className="text-gray-300 mt-2">Bienvenido, gestiona todas tus operaciones desde aquí</p>
                         </div>
                         <div className="text-right">
                             <div className="text-3xl font-bold">{currentTime}</div>
                             <p className="text-gray-300 text-sm">
-                                {new Date().toLocaleDateString("es-ES", { weekday: "long", month: "long", day: "numeric" })}
+                                {new Date().toLocaleDateString("es-ES", {
+                                    weekday: "long",
+                                    month: "long",
+                                    day: "numeric",
+                                    timeZone: "America/Santiago"
+                                })}
                             </p>
                         </div>
                     </div>

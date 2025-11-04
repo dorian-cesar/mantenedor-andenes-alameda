@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/sidebar';
 import Nav from '@/components/navbar';
 
-export default function SecondaryLayout({ children, title = "Terminal Alameda" }) {
+export default function SecondaryLayout({ children, title = "Terminal de Buses" }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
