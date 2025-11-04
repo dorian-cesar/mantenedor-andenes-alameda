@@ -1,19 +1,67 @@
-import { Users, BusFront, CircleParking, Clock } from 'lucide-react'
+"use client"
 
-import { DashboardCard1 } from '@/components/cards/dashboardCard'
+import { useState, useEffect } from "react"
+import { Users, BusFront, CircleParking, Clock, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react'
+import { DashboardCard1, DashboardCard2 } from '@/components/cards/dashboardCard'
 
 export default function DashboardPage() {
-    return (
-        <div className='flex gap-10'>
-            <DashboardCard1 icon={<Users className='h-8 w-8' />} title={"Usuarios"} data={"1234"} color={"red"}></DashboardCard1>
-            <DashboardCard1 icon={<BusFront className='h-8 w-8' />} title={"Buses"} data={"123"} color={"border-blue-500"}></DashboardCard1>
-            <DashboardCard1 icon={<CircleParking className='h-8 w-8' />} title={"Parking"} data={"1331"} color={"border-blue-500"}></DashboardCard1>
-            <DashboardCard1 icon={<Clock className='h-8 w-8' />} title={"Permanencias"} data={"13313131"} color={"border-blue-500"}></DashboardCard1>
 
-            {/* <div className='flex border-t-3 border-amber-600 w-10 h-10 rounded-full animate-spin'></div>
+    const [currentTime, setCurrentTime] = useState("")
+
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date()
+            setCurrentTime(now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }))
+        }
+        updateTime()
+        const interval = setInterval(updateTime, 1000)
+        return () => clearInterval(interval)
+    }, [])
+
+    return (
+        <div>
+            <div className="bg-linear-to-r from-gray-900 to-gray-800 text-white p-10 md:p-15">
+                <div className="flex flex-col items-center justify-between w-full">
+                    <div className=" w-full flex items-center justify-between mb-6">
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold text-balance">Terminal de Buses - Panel Principal</h1>
+                            <p className="text-gray-300 mt-2">Bienvenido, gestiona todas tus operaciones desde aquí</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-3xl font-bold">{currentTime}</div>
+                            <p className="text-gray-300 text-sm">
+                                {new Date().toLocaleDateString("es-ES", { weekday: "long", month: "long", day: "numeric" })}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <DashboardCard1 icon={<TrendingUp className="h-6 w-6" />} title={"Buses en terminal"} data={"12"} color={"red"} />
+                        <DashboardCard1 icon={<AlertCircle className="h-6 w-6" />} title={"Andenes ocupados"} data={"12"} color={"green"} />
+                        <DashboardCard1 icon={<CheckCircle className="h-6 w-6" />} title={"Tareas completadas"} data={"12"} color={"emerald"} />
+                    </div>
+                </div>
+            </div>
+            <div className="p-4 md:p-8">
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Módulos de Gestión</h2>
+                    <p className="text-gray-600">Selecciona un módulo para gestionar aspectos específicos del terminal</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+
+
+                    <DashboardCard2 link={"/dashboard/vehiculos"} icon={<Users className='h-6 w-6' />} title={"Gestión de Vehículos"} description={"Administra los buses del terminal"} color={"red"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/andenes"} icon={<Users className='h-6 w-6' />} title={"Gestión de Andenes"} description={"Gestiona los andenes del terminal"} color={"emerald"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/permanencias"} icon={<Users className='h-6 w-6' />} title={"Permanencias"} description={"Tiempo de estadía de los buses en el terminal"} color={"green"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/usuarios"} icon={<Users className='h-6 w-6' />} title={"Gestión de Usuarios"} description={"Administra los usuarios del sistema"} color={"blue"}></DashboardCard2>
+
+                    {/* <div className='flex border-t-3 border-amber-600 w-10 h-10 rounded-full animate-spin'></div>
             <div className='flex border-r-3 border-green-600 w-10 h-10 rounded-full animate-spin'></div>
             <div className='flex border-b-3 border-blue-600 w-10 h-10 rounded-full animate-spin'></div>
             <div className='flex border-l-3 border-red-600 w-10 h-10 rounded-full animate-spin'></div> */}
+                </div>
+            </div>
         </div>
+
     )
 }
