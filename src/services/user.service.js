@@ -24,6 +24,28 @@ class UserService {
         }
     }
 
+    static async getUserByID(userID) {
+        try {
+            const response = await fetch(`${API_URL}users/${userID}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${SessionHelper.getToken()}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.mensaje || `Usuario ${userID} no encontrado`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error en getUserByID:', error);
+            throw error;
+        }
+    }
+
     static async createUser(userData) {
         try {
             const response = await fetch(`${API_URL}users`, {
@@ -69,22 +91,71 @@ class UserService {
         }
     }
 
-    static async deleteUser(id) {
+    static async updatePassword(id, nuevaPassword) {
         try {
-            const response = await fetch(`${API_URL}users/${id}`, {
-                method: 'DELETE',
+            const response = await fetch(`${API_URL}users/${id}/password`, {
+                method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${SessionHelper.getToken()}`,
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ nuevaPassword }),
             });
 
             if (!response.ok) {
-                throw new Error('Error al eliminar usuario');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.mensaje || 'Error al actualizar contraseña');
             }
 
             return await response.json();
         } catch (error) {
-            console.error('Error en deleteUser:', error);
+            console.error('Error en updatePassword:', error);
+            throw error;
+        }
+    }
+
+    static async deactivateUser(id) {
+        try {
+            const response = await fetch(`${API_URL}users/${id}/estado`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${SessionHelper.getToken()}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ estado: 'inactivo' }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.mensaje || 'Error al desactivar usuario');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error en deactivateUser:', error);
+            throw error;
+        }
+    }
+
+    static async activateUser(id) {
+        try {
+            const response = await fetch(`${API_URL}users/${id}/estado`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${SessionHelper.getToken()}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ estado: 'activo' }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.mensaje || 'Error al activar usuario');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error en activateUser:', error);
             throw error;
         }
     }

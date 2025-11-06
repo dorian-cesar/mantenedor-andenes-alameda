@@ -1,6 +1,6 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Users, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Search, Users, Edit, Trash2, Check, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
 import UserService from '@/services/user.service';
 import Notification from '@/components/notification';
 import UserModal from '@/components/modals/userModal';
@@ -17,18 +17,67 @@ export default function UsuariosPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
+
+
+  const debounceRef = useRef(null);
+
   useEffect(() => {
     loadUsers();
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter(user =>
-      user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.rol.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredUsers(filtered);
-    setCurrentPage(1);
+    // debounce para no ejecutar lógica en cada tecla
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      (async () => {
+        const term = searchTerm?.trim() ?? '';
+
+        if (!term) {
+          setFilteredUsers(users);
+          setCurrentPage(1);
+          return;
+        }
+
+        // Caso: búsqueda por ID -> números puros o "id:123"
+        const idMatch = term.match(/^id\s*:\s*(\d+)$/i);
+        const numericMatch = term.match(/^\d+$/);
+
+        if (idMatch || numericMatch) {
+          const id = idMatch ? idMatch[1] : term;
+          try {
+            setLoading(true);
+            const user = await UserService.getUserByID(id);
+            if (user) {
+              setFilteredUsers([user]);
+            } else {
+              setFilteredUsers([]);
+              showNotification('error', `No se encontró el usuario con id ${id}`);
+            }
+          } catch (err) {
+            setFilteredUsers([]);
+            showNotification('error', err?.message || `Error buscando usuario ${id}`);
+          } finally {
+            setLoading(false);
+            setCurrentPage(1);
+          }
+          return;
+        }
+
+        // Caso: búsqueda por texto (nombre, correo, rol) - filtrado local
+        const filtered = users.filter(user =>
+          (user.nombre || '').toLowerCase().includes(term.toLowerCase()) ||
+          (user.correo || '').toLowerCase().includes(term.toLowerCase()) ||
+          (user.rol || '').toLowerCase().includes(term.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+        setCurrentPage(1);
+      })();
+    }, 300); // debounce 300ms
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [searchTerm, users]);
 
   const loadUsers = async () => {
@@ -59,14 +108,25 @@ export default function UsuariosPage() {
     setShowModal(true);
   };
 
-  const handleDeleteUser = async (user) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar al usuario ${user.nombre}?`)) {
+  const handleActiveUser = async (user) => {
+    try {
+      await UserService.activateUser(user.id);
+      loadUsers();
+      showNotification('success', 'Usuario activado correctamente');
+    } catch (error) {
+      showNotification('error', 'Error al desactivar usuario: ' + error.message);
+    }
+
+  };
+
+  const handleDesactiveUser = async (user) => {
+    if (confirm(`¿Estás seguro de que quieres desactivar al usuario ${user.nombre}?`)) {
       try {
-        // await UserService.deleteUser(user.id);
-        // loadUsers();
-        showNotification('success', 'Usuario eliminado correctamente');
+        await UserService.deactivateUser(user.id);
+        loadUsers();
+        showNotification('success', 'Usuario desactivado correctamente');
       } catch (error) {
-        showNotification('error', 'Error al eliminar usuario: ' + error.message);
+        showNotification('error', 'Error al desactivar usuario: ' + error.message);
       }
     }
   };
@@ -74,10 +134,10 @@ export default function UsuariosPage() {
   const handleSaveUser = async (userData) => {
     try {
       if (editingUser) {
-        // await UserService.updateUser(editingUser.id, userData);
+        await UserService.updateUser(editingUser.id, userData);
         showNotification('success', 'Usuario actualizado correctamente');
       } else {
-        // await UserService.createUser(userData);
+        await UserService.createUser(userData);
         showNotification('success', 'Usuario creado correctamente');
       }
       setShowModal(false);
@@ -115,6 +175,13 @@ export default function UsuariosPage() {
             <h1 className="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
             <p className="text-gray-600">Administra los usuarios del sistema</p>
           </div>
+
+          <button
+            onClick={() => { loadUsers() }}
+            className='flex items-center bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold p-3 rounded-full cursor-pointer'
+          >
+            <RefreshCcw />
+          </button>
         </div>
         <button
           onClick={handleCreateUser}
@@ -151,6 +218,7 @@ export default function UsuariosPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">#</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Usuario</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Correo</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Rol</th>
@@ -160,7 +228,10 @@ export default function UsuariosPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
+                      <tr key={user.id} className={` ${user.estado === 'activo' ? 'hover:bg-gray-50' : 'hover:bg-gray-300 bg-gray-200'}`}>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{user.id}</div>
+                        </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{user.nombre}</div>
                         </td>
@@ -188,13 +259,25 @@ export default function UsuariosPage() {
                             >
                               <Edit className="h-5 w-5" />
                             </button>
-                            <button
-                              onClick={() => handleDeleteUser(user)}
-                              className="text-red-600 hover:text-red-900 bg-red-200 p-2 rounded-full cursor-pointer"
-                              aria-label={`Eliminar ${user.nombre}`}
-                            >
-                              <Trash2 className="h-5 w-5" />
-                            </button>
+                            {user.estado === 'activo'
+                              ? <button
+                                onClick={() => handleDesactiveUser(user)}
+                                className="text-red-600 hover:text-red-900 bg-red-200 p-2 rounded-full cursor-pointer"
+                                aria-label={`Desactivar ${user.nombre}`}
+                                title={`Desactivar ${user.nombre}`}
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                              : <button
+                                onClick={() => handleActiveUser(user)}
+                                className="text-blue-600 hover:text-blue-900 bg-blue-200 p-2 rounded-full cursor-pointer"
+                                aria-label={`Activar ${user.nombre}`}
+                                title={`Activar ${user.nombre}`}
+                              >
+                                <Check className="h-5 w-5" />
+                              </button>
+                            }
+
                           </div>
                         </td>
                       </tr>
@@ -211,7 +294,11 @@ export default function UsuariosPage() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <div>
-                            <div className="text-sm font-semibold text-gray-900">{user.nombre}</div>
+                            <div className='flex items-center'>
+                              <div className="text-sm font-semibold text-gray-900">{user.id}</div>
+                              <div className='w-5 text-center'>•</div>
+                              <div className="text-sm font-semibold text-gray-900">{user.nombre}</div>
+                            </div>
                             <div className="text-xs text-gray-500 truncate">{user.correo}</div>
                           </div>
                           <div>
@@ -238,13 +325,25 @@ export default function UsuariosPage() {
                         >
                           <Edit className="h-4 w-4 text-blue-600" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteUser(user)}
-                          className="p-2 rounded-md bg-red-100 hover:bg-red-200"
-                          aria-label={`Eliminar ${user.nombre}`}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </button>
+
+                        {user.estado === 'activo'
+                          ? <button
+                            onClick={() => handleDesactiveUser(user)}
+                            className="p-2 rounded-md bg-red-100 hover:bg-red-200"
+                            aria-label={`Desactivar ${user.nombre}`}
+                            title={`Desactivar ${user.nombre}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          : <button
+                            onClick={() => handleActiveUser(user)}
+                            className="p-2 rounded-md bg-blue-100 hover:bg-blue-200"
+                            aria-label={`Activar ${user.nombre}`}
+                            title={`Activar ${user.nombre}`}
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                        }
                       </div>
                     </div>
                   </div>

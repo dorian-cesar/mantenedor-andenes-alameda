@@ -1,15 +1,40 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { X, User, Mail, Lock, Shield } from 'lucide-react';
+import { X, User, Mail, Lock, Shield, Building } from 'lucide-react';
+import EmpresaService from '@/services/empresa.service';
+import SessionHelper from '@/utils/session';
 
 export default function UserModal({ user, onSave, onClose }) {
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
         password: '',
-        rol: 'usuario'
+        rol: 'operador',
+        empresa_id: ''
     });
     const [loading, setLoading] = useState(false);
+    const [empresas, setEmpresas] = useState([]);
+
+    const [superUser, setSuperUser] = useState(false)
+
+    useEffect(() => {
+        const currentUser = SessionHelper.getUser();
+        setSuperUser(Number(currentUser?.id) === 1);
+    }, []);
+
+    useEffect(() => {
+        const fetchEmpresas = async () => {
+            try {
+                const res = await EmpresaService.getEmpresas();
+                const lista = Array.isArray(res?.data) ? res.data : res;
+                setEmpresas(lista);
+            } catch (err) {
+                console.error('Error al obtener empresas:', err);
+                setEmpresas([]);
+            }
+        };
+        fetchEmpresas();
+    }, []);
 
     useEffect(() => {
         if (user) {
@@ -17,7 +42,8 @@ export default function UserModal({ user, onSave, onClose }) {
                 nombre: user.nombre || '',
                 correo: user.correo || '',
                 password: '',
-                rol: user.rol || 'operador'
+                rol: user.rol || 'operador',
+                empresa_id: user.empresa_id || ''
             });
         }
     }, [user]);
@@ -27,11 +53,10 @@ export default function UserModal({ user, onSave, onClose }) {
         setLoading(true);
 
         try {
-            // Si es edición y no se cambió la contraseña, no enviarla
             const dataToSend = user
                 ? formData.password
                     ? formData
-                    : { nombre: formData.nombre, correo: formData.correo, rol: formData.rol }
+                    : { nombre: formData.nombre, correo: formData.correo, rol: formData.rol, empresa_id: formData.empresa_id }
                 : formData;
 
             await onSave(dataToSend);
@@ -63,6 +88,7 @@ export default function UserModal({ user, onSave, onClose }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Nombre Completo
@@ -101,7 +127,9 @@ export default function UserModal({ user, onSave, onClose }) {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {user ? 'Nueva Contraseña (dejar en blanco para no cambiar)' : 'Contraseña'}
+                            {user
+                                ? (superUser ? 'Cambiar Contraseña' : 'Bloqueado')
+                                : 'Contraseña'}
                         </label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -112,10 +140,21 @@ export default function UserModal({ user, onSave, onClose }) {
                                 onChange={handleChange}
                                 required={!user}
                                 minLength={6}
-                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
-                                placeholder="••••••••"
+                                disabled={!!user && !superUser}
+                                className={`w-full pl-11 pr-12 py-3 border-2 rounded-xl outline-none transition-all duration-200 
+                                    ${user && !superUser
+                                        ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
+                                        : 'border-gray-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-50'}
+      `}
+                                placeholder={user ? '• • • • • • • •' : 'Ingresa una contraseña'}
                             />
                         </div>
+
+                        {user && !superUser && (
+                            <p className="text-sm text-gray-500 mt-1">
+                                No puedes cambiar la contraseña de un usuario creado
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -133,11 +172,34 @@ export default function UserModal({ user, onSave, onClose }) {
                             >
                                 <option value="operador">Operador</option>
                                 <option value="administrador">Administrador</option>
-                                <option value="superusuario">Superusuario</option>
                             </select>
                         </div>
                     </div>
 
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Empresa
+                        </label>
+                        <div className="relative">
+                            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <select
+                                name="empresa_id"
+                                value={formData.empresa_id}
+                                onChange={handleChange}
+                                required
+                                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                            >
+                                <option value="">Seleccionar empresa...</option>
+                                {empresas.map((empresa) => (
+                                    <option key={empresa.id} value={empresa.id}>
+                                        {empresa.nombre}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Botones */}
                     <div className="flex gap-3 pt-4">
                         <button
                             type="button"
