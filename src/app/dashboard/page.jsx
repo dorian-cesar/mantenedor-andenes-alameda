@@ -56,10 +56,10 @@ export default function DashboardPage() {
 
 
                     <DashboardCard2 link={"/dashboard/vehiculos"} icon={<Users className='h-6 w-6' />} title={"Gestión de Vehículos"} description={"Administra los buses del terminal"} color={"red"}></DashboardCard2>
-                    <DashboardCard2 link={"/dashboard/andenes"} icon={<Users className='h-6 w-6' />} title={"Gestión de Andenes"} description={"Gestiona los andenes del terminal"} color={"emerald"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/empresas"} icon={<Users className='h-6 w-6' />} title={"Gestión de Empresas"} description={"Administra las empresas del sistema"} color={"emerald"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/andenes"} icon={<Users className='h-6 w-6' />} title={"Gestión de Andenes"} description={"Gestiona los andenes del terminal"} color={"blue"}></DashboardCard2>
+                    <DashboardCard2 link={"/dashboard/usuarios"} icon={<Users className='h-6 w-6' />} title={"Gestión de Usuarios"} description={"Administra los usuarios del sistema"} color={"purple"}></DashboardCard2>
                     <DashboardCard2 link={"/dashboard/permanencias"} icon={<Users className='h-6 w-6' />} title={"Permanencias"} description={"Tiempo de estadía de los buses en el terminal"} color={"green"}></DashboardCard2>
-                    <DashboardCard2 link={"/dashboard/usuarios"} icon={<Users className='h-6 w-6' />} title={"Gestión de Usuarios"} description={"Administra los usuarios del sistema"} color={"blue"}></DashboardCard2>
-
                     {/* <div className='flex border-t-3 border-amber-600 w-10 h-10 rounded-full animate-spin'></div>
             <div className='flex border-r-3 border-green-600 w-10 h-10 rounded-full animate-spin'></div>
             <div className='flex border-b-3 border-blue-600 w-10 h-10 rounded-full animate-spin'></div>

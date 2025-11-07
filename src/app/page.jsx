@@ -3,7 +3,7 @@ import Image from "next/image"
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Mail, Lock, Eye, EyeOff, Building2, ArrowRight, User, BusFront, CircleParking, Clock } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, BusFront, CircleParking, Clock, Fingerprint } from 'lucide-react';
 
 import Notification from "@/components/notification";
 import SessionHelper from "@/utils/session";
@@ -84,47 +84,59 @@ export default function Login() {
       <Notification type={notif.type} message={notif.message} />
 
       {/* Banner móvil (visible solo en sm/lg abajo) */}
-      <div className="flex items-center gap-4 px-6 py-4 bg-linear-to-br from-gray-600 to-sky-800 text-white lg:hidden">
-        <div className="flex flex-col items-center">
-          <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-            <Image src="/wit.png" alt="WIT Logo" width={40} height={40} className="filter brightness-0 invert" />
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold">Sistema de Control</h1>
-            <p className="text-xs text-blue-100">Innovación con más de 15 años</p>
-          </div>
+      <div className="flex items-center justify-center gap-4 px-6 py-4 bg-linear-to-br from-gray-600 to-sky-800 text-white lg:hidden">
+
+        <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 mr-5">
+          <Image src="/wit.png" alt="WIT Logo" width={40} height={40} className="filter brightness-0 invert" />
+        </div>
+        <div className="ml-5">
+          <h1 className="text-xl font-semibold">Sistema de Control</h1>
+
         </div>
       </div>
 
       <aside className="flex-1 hidden lg:flex flex-col justify-between p-12 bg-linear-to-br from-gray-600 to-sky-800 text-white">
 
-        <div className="flex-1 flex gap-6">
-          <div className="h-20 w-20 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
-            <Image src="/wit.png" alt="WIT Logo" width={64} height={64} className="filter brightness-0 invert" />
+        <div className="h-full flex gap-6">
+          <div className="h-25 w-25 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 aspect-square">
+            <Image
+              src="/wit.png"
+              alt="WIT Logo"
+              width={64}
+              height={64}
+              className="filter brightness-0 invert object-contain"
+            />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Sistema de Control de Terminales</h1>
+            <h1 className="text-5xl font-bold">Sistema de Control de Terminales</h1>
             <p className="text-blue-100 mt-1">Innovación con más de 15 años de trabajo</p>
           </div>
         </div>
+        <div className="flex flex-col gap-10">
+          <div className="flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <LoginCard1 icon={<User />} title={"Usuarios"} description={"Creación de usuarios del sistema"} />
+              <LoginCard1 icon={<BusFront />} title={"Buses"} description={"Administración de buses"} />
+              <LoginCard1 icon={<CircleParking />} title={"Andenes"} description={"Gestión de andenes"} />
+              <LoginCard1 icon={<Clock />} title={"Permanencia"} description={"Control de permanencia"} />
+            </div>
+          </div>
 
-        <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <LoginCard1 icon={<User />} title={"Usuarios"} description={"Creación de usuarios del sistema"} />
-            <LoginCard1 icon={<BusFront />} title={"Buses"} description={"Administración de buses"} />
-            <LoginCard1 icon={<CircleParking />} title={"Andenes"} description={"Gestión de andenes"} />
-            <LoginCard1 icon={<Clock />} title={"Permanencia"} description={"Control de permanencia"} />
+
+          <div className="flex-1">
+            <LoginCard2 />
           </div>
         </div>
 
-
-        <div className="flex-1">
-          <LoginCard2 />
-        </div>
       </aside>
 
       <main className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-white">
         <div className="w-full max-w-md sm:max-w-lg">
+          <div className="flex items-center justify-center mb-5">
+            <div className="bg-gray-200 p-5 rounded-full text-blue-500">
+              <Fingerprint className="h-20 w-20" />
+            </div>
+          </div>
           <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">Bienvenido</h2>
             <p className="text-sm sm:text-base text-gray-600">Ingresa tus credenciales para continuar</p>

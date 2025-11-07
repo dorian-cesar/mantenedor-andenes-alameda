@@ -50,13 +50,6 @@ export default function NotFound() {
 
                         {/* Botones de acción */}
                         <div className="space-y-4">
-                            <Link
-                                href="/dashboard"
-                                className="w-full bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold py-3.5 px-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
-                            >
-                                <Home className="w-5 h-5" />
-                                <span>Ir al Dashboard</span>
-                            </Link>
 
                             <button
                                 onClick={() => router.back()}

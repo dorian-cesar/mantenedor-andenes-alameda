@@ -6,6 +6,7 @@ const colorClasses = {
     red: "bg-orange-50 border-orange-200 text-orange-600 from-orange-500 to-orange-700",
     emerald: "bg-emerald-50 border-emerald-200 text-emerald-600 from-emerald-500 to-emerald-700",
     green: "bg-green-50 border-green-200 text-green-500 from-green-500 to-green-700",
+    purple: "bg-purple-50 border-purple-200 text-purple-600 from-purple-500 to-purple-700"
 };
 
 
@@ -29,7 +30,7 @@ export function DashboardCard2({ link = "#", icon, title, description, color = "
     return (
         <Link href={link}>
             <div
-                className={`${colors.split(" ")[0]} border-3 ${colors.split(" ")[1]} rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col`}
+                className={`${colors.split(" ")[0]} border-3 ${colors.split(" ")[1]} rounded-2xl p-6 bg-pur cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col`}
             >
                 <div className={`bg-linear-to-r ${colors.split(" ")[3]} ${colors.split(" ")[4]} text-white p-4 rounded-xl w-fit mb-4`}>
                     {icon}
