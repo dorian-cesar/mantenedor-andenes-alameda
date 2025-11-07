@@ -1,9 +1,9 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Building, Edit, Trash2, Check, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
+import { Plus, Search, Building, Edit, Trash2, Check, ChevronLeft, ChevronRight, RefreshCcw, XIcon } from 'lucide-react';
 import EmpresaService from '@/services/empresa.service';
 import Notification from '@/components/notification';
-import UserModal from '@/components/modals/userModal';
+import EmpresaModal from '@/components/modals/empresaModal';
 
 
 export default function EmpresasPage() {
@@ -47,7 +47,7 @@ export default function EmpresasPage() {
                     const id = idMatch ? idMatch[1] : term;
                     try {
                         setLoading(true);
-                        const empresa = await EmpresaService.getEmpresaByID(id);
+                        const empresa = await EmpresaService.getEmpresaByID(id, true);
                         if (empresa) {
                             setFilteredEmpresas([empresa]);
                         } else {
@@ -83,7 +83,7 @@ export default function EmpresasPage() {
     const loadEmpresas = async () => {
         try {
             setLoading(true);
-            const empresasData = await EmpresaService.getEmpresas();
+            const empresasData = await EmpresaService.getEmpresas(true);
             setEmpresas(empresasData);
             setFilteredEmpresas(empresasData);
         } catch (error) {
@@ -188,7 +188,7 @@ export default function EmpresasPage() {
                     className="flex items-center gap-2 bg-linear-to-r from-sky-600 to-sky-800 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
                     <Plus className="h-4 w-4" />
-                    Nuevo Usuario
+                    Nueva Empresa
                 </button>
             </div>
 
@@ -252,8 +252,8 @@ export default function EmpresasPage() {
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${empresa.estado === 'activa'
-                                                        ? 'bg-purple-200 text-purple-800'
-                                                        : 'bg-blue-200 text-blue-800'
+                                                        ? 'bg-emerald-200 text-emerald-800'
+                                                        : 'bg-orange-200 text-orange-800'
                                                         }`}>
                                                         {empresa.estado}
                                                     </span>
@@ -277,11 +277,11 @@ export default function EmpresasPage() {
                                                                 aria-label={`Desactivar ${empresa.nombre}`}
                                                                 title={`Desactivar ${empresa.nombre}`}
                                                             >
-                                                                <Trash2 className="h-5 w-5" />
+                                                                <XIcon className="h-5 w-5" />
                                                             </button>
                                                             : <button
                                                                 onClick={() => handleActiveEmpresa(empresa)}
-                                                                className="text-blue-600 hover:text-blue-900 bg-blue-200 p-2 rounded-full cursor-pointer"
+                                                                className="text-emerald-800 hover:text-emerald-900 bg-emerald-200 p-2 rounded-full cursor-pointer"
                                                                 aria-label={`Activar ${empresa.nombre}`}
                                                                 title={`Activar ${empresa.nombre}`}
                                                             >
@@ -298,59 +298,75 @@ export default function EmpresasPage() {
                             </div>
 
                             {/* Cards para móvil (sm - md) */}
-                            {/* <div className="md:hidden divide-y divide-gray-200">
-                                {currentUsers.map((user) => (
-                                    <div key={user.id} className="p-4 bg-white">
-                                        <div className="flex justify-between items-start gap-3">
+                            <div className="md:hidden divide-y divide-gray-200">
+                                {currentEmpresas.map((empresa) => (
+                                    <div key={empresa.id} className="p-4 bg-white">
+                                        <div className="flex justify-between items-center gap-3">
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <div>
                                                         <div className='flex items-center'>
-                                                            <div className="text-sm font-semibold text-gray-900">{user.id}</div>
+                                                            <div className="text-sm font-semibold text-gray-900">{empresa.id}</div>
                                                             <div className='w-5 text-center'>•</div>
-                                                            <div className="text-sm font-semibold text-gray-900">{user.nombre}</div>
+                                                            <div className="text-sm font-semibold text-gray-900">{empresa.nombre}</div>
                                                         </div>
-                                                        <div className="text-xs text-gray-500 truncate">{user.correo}</div>
+
                                                     </div>
                                                     <div>
-                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.rol === 'superusuario'
-                                                            ? 'bg-purple-200 text-purple-800'
-                                                            : user.rol === 'administrador'
-                                                                ? 'bg-blue-200 text-blue-800'
-                                                                : 'bg-gray-200 text-black'}`}>
-                                                            {user.rol}
+                                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${empresa.estado === 'activa'
+                                                            ? 'bg-emerald-200 text-emerald-800'
+                                                            : 'bg-orange-200 text-orange-800'
+                                                            }`}>
+                                                            {empresa.estado}
                                                         </span>
                                                     </div>
                                                 </div>
+                                                <div className="mb-2 text-xs text-gray-500">
+                                                    <div className="text-xs text-gray-500 truncate">{empresa.contacto}</div>
+                                                    <div className="text-xs text-gray-500 truncate">{empresa.telefono}</div>
+                                                </div>
 
                                                 <div className="mt-2 text-xs text-gray-500">
-                                                    Creado: {new Date(user.creado_en).toLocaleDateString('es-ES')}
+                                                    <div>
+                                                        Creado: {new Date(empresa.creado_en).toLocaleDateString('es-ES')}
+                                                    </div>
+                                                    <div className='flex'>
+                                                        <div>
+                                                            {empresa.direccion}
+                                                        </div>
+                                                        <div className='w-5 text-center'>•</div>
+                                                        <div>
+                                                            {empresa.rut}
+                                                        </div>
+                                                    </div>
+
                                                 </div>
+
                                             </div>
 
-                                            <div className="flex flex-col items-end gap-2 ml-2">
+                                            <div className="flex flex-col items-center justify-between h-full gap-2 ml-2">
                                                 <button
-                                                    onClick={() => handleEditUser(user)}
-                                                    className="p-2 rounded-md bg-blue-100 hover:bg-blue-200"
-                                                    aria-label={`Editar ${user.nombre}`}
+                                                    onClick={() => handleEditEmpresa(empresa)}
+                                                    className="p-2 rounded-md text-blue-600 hover:text-blue-900 bg-blue-200"
+                                                    aria-label={`Editar ${empresa.nombre}`}
                                                 >
                                                     <Edit className="h-4 w-4 text-blue-600" />
                                                 </button>
 
-                                                {user.estado === 'activo'
+                                                {empresa.estado === 'activa'
                                                     ? <button
-                                                        onClick={() => handleDesactiveUser(user)}
-                                                        className="p-2 rounded-md bg-red-100 hover:bg-red-200"
-                                                        aria-label={`Desactivar ${user.nombre}`}
-                                                        title={`Desactivar ${user.nombre}`}
+                                                        onClick={() => handleDesactiveEmpresa(empresa)}
+                                                        className="p-2 rounded-md text-red-600 hover:text-red-900 bg-red-200"
+                                                        aria-label={`Desactivar ${empresa.nombre}`}
+                                                        title={`Desactivar ${empresa.nombre}`}
                                                     >
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <XIcon className="h-4 w-4" />
                                                     </button>
                                                     : <button
-                                                        onClick={() => handleActiveUser(user)}
-                                                        className="p-2 rounded-md bg-blue-100 hover:bg-blue-200"
-                                                        aria-label={`Activar ${user.nombre}`}
-                                                        title={`Activar ${user.nombre}`}
+                                                        onClick={() => handleActiveEmpresa(empresa)}
+                                                        className="p-2 rounded-md text-emerald-800 hover:text-emerald-900 bg-emerald-200"
+                                                        aria-label={`Activar ${empresa.nombre}`}
+                                                        title={`Activar ${empresa.nombre}`}
                                                     >
                                                         <Check className="h-4 w-4" />
                                                     </button>
@@ -359,7 +375,7 @@ export default function EmpresasPage() {
                                         </div>
                                     </div>
                                 ))}
-                            </div> */}
+                            </div>
 
                             {filteredEmpresas.length === 0 && (
                                 <div className="text-center py-8">
@@ -404,8 +420,8 @@ export default function EmpresasPage() {
 
 
             {showModal && (
-                <UserModal
-                    user={editingEmpresa}
+                <EmpresaModal
+                    empresa={editingEmpresa}
                     onSave={handleSaveEmpresa}
                     onClose={() => setShowModal(false)}
                 />
