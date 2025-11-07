@@ -1,70 +1,285 @@
-"use client";
-import React, { useState, useEffect } from "react";
+"use client"
+import React, { useState, useEffect } from 'react';
+import { X, Users2, Building, Barcode, Tag, CircleStar, Puzzle } from 'lucide-react';
+import EmpresaService from '@/services/empresa.service';
+import SessionHelper from '@/utils/session';
 
-export default function VehiculoModal({ vehiculo, onSave, onClose }) {
-  const [patente, setPatente] = useState("");
-  const [marca, setMarca] = useState("");
-  const [modelo, setModelo] = useState("");
-  const [anio, setAnio] = useState(new Date().getFullYear());
-  const [saving, setSaving] = useState(false);
+const sanitizePatente = (val = "") => {
+  return String(val).toUpperCase().replace(/[^A-Z0-9]/g, '');
+};
+
+const sanitizeTag = (val = "") => {
+  return String(val).toUpperCase().replace(/[^A-Z0-9\-_.]/g, '');
+};
+
+const extractArray = (resp) => {
+  if (!resp) return [];
+  if (Array.isArray(resp)) return resp;
+  if (resp && Array.isArray(resp.data)) return resp.data;
+  return [];
+};
+
+export default function VehiculoModal({ bus, onSave, onClose }) {
+  const [formData, setFormData] = useState({
+    patente: '',
+    tag_uhf: '',
+    marca: '',
+    modelo: '',
+    capacidad: '',
+    empresa_id: '',
+    estado: 'activo'
+  });
+  const [loading, setLoading] = useState(false);
+  const [empresas, setEmpresas] = useState([]);
+  const [superUser, setSuperUser] = useState(false);
 
   useEffect(() => {
-    if (vehiculo) {
-      setPatente(vehiculo.patente || "");
-      setMarca(vehiculo.marca || "");
-      setModelo(vehiculo.modelo || "");
-      setAnio(vehiculo.anio || new Date().getFullYear());
+    const currentUser = SessionHelper.getUser();
+    setSuperUser(Number(currentUser?.id) === 1);
+  }, []);
+
+  useEffect(() => {
+    const fetchEmpresas = async () => {
+      try {
+        const res = await EmpresaService.getEmpresas();
+        const lista = extractArray(res);
+        setEmpresas(lista);
+      } catch (err) {
+        console.error('Error al obtener empresas:', err);
+        setEmpresas([]);
+      }
+    };
+    fetchEmpresas();
+  }, []);
+
+  useEffect(() => {
+    if (bus) {
+      setFormData({
+        patente: bus.patente ? sanitizePatente(bus.patente) : '',
+        tag_uhf: bus.tag_uhf ? sanitizeTag(bus.tag_uhf) : '',
+        marca: bus.marca || '',
+        modelo: bus.modelo || '',
+        capacidad: bus.capacidad ?? '',
+        empresa_id: bus.empresa_id ?? '',
+        estado: bus.estado || 'activo'
+      });
     } else {
-      setPatente("");
-      setMarca("");
-      setModelo("");
-      setAnio(new Date().getFullYear());
+      setFormData({
+        patente: '',
+        tag_uhf: '',
+        marca: '',
+        modelo: '',
+        capacidad: '',
+        empresa_id: '',
+        estado: 'activo'
+      });
     }
-  }, [vehiculo]);
+  }, [bus]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!patente || !marca || !modelo) {
-      alert("Patente, marca y modelo son obligatorios");
-      return;
-    }
-    setSaving(true);
+    setLoading(true);
+
     try {
-      await onSave({ patente, marca, modelo, anio });
+      const dataToSend = {
+        patente: sanitizePatente(formData.patente),
+        tag_uhf: sanitizeTag(formData.tag_uhf),
+        marca: formData.marca || '',
+        modelo: formData.modelo || '',
+        capacidad: Number(formData.capacidad) || 0,
+        empresa_id: Number(formData.empresa_id) || null,
+        estado: formData.estado || 'activo'
+      };
+
+      if (!dataToSend.patente) throw new Error('Patente requerida');
+      if (!dataToSend.tag_uhf) throw new Error('Tag UHF requerido');
+      if (!dataToSend.empresa_id) throw new Error('Empresa requerida');
+
+      await onSave(dataToSend);
     } catch (err) {
-      console.error(err);
-      alert(err.message || "Error al guardar");
+      console.error('Error al guardar vehículo:', err);
+      alert(err?.message || 'Error al guardar vehículo');
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'patente') {
+      setFormData(prev => ({ ...prev, patente: sanitizePatente(value) }));
+      return;
+    }
+
+    if (name === 'tag_uhf') {
+      setFormData(prev => ({ ...prev, tag_uhf: sanitizeTag(value) }));
+      return;
+    }
+
+    if (name === 'capacidad') {
+      const num = value === '' ? '' : Number(value);
+      setFormData(prev => ({ ...prev, capacidad: num }));
+      return;
+    }
+
+    if (name === 'empresa_id') {
+      setFormData(prev => ({ ...prev, empresa_id: value }));
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose}></div>
-
-      <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-md bg-white rounded-2xl p-6 shadow-xl">
-        <h3 className="text-lg font-semibold mb-4">{vehiculo ? "Editar Vehículo" : "Nuevo Vehículo"}</h3>
-
-        <label className="block mb-2 text-sm font-medium">Patente</label>
-        <input type="text" value={patente} onChange={(e) => setPatente(e.target.value)} className="w-full px-3 py-2 border rounded-md mb-3 outline-none" required />
-
-        <label className="block mb-2 text-sm font-medium">Marca</label>
-        <input type="text" value={marca} onChange={(e) => setMarca(e.target.value)} className="w-full px-3 py-2 border rounded-md mb-3 outline-none" required />
-
-        <label className="block mb-2 text-sm font-medium">Modelo</label>
-        <input type="text" value={modelo} onChange={(e) => setModelo(e.target.value)} className="w-full px-3 py-2 border rounded-md mb-3 outline-none" required />
-
-        <label className="block mb-2 text-sm font-medium">Año</label>
-        <input type="number" value={anio} onChange={(e) => setAnio(Number(e.target.value))} className="w-full px-3 py-2 border rounded-md mb-4 outline-none" />
-
-        <div className="flex justify-end gap-3">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded-md bg-gray-100">Cancelar</button>
-          <button type="submit" disabled={saving} className="px-4 py-2 rounded-md bg-orange-600 text-white">
-            {saving ? "Guardando..." : "Guardar"}
+    <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-md w-full">
+        <div className="flex justify-between items-center p-6 border-b border-gray-400">
+          <h2 className="text-xl font-semibold">
+            {bus ? 'Editar Vehículo' : 'Nuevo Vehículo'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
           </button>
         </div>
-      </form>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Patente
+            </label>
+            <div className="relative">
+              <Barcode className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                name="patente"
+                value={formData.patente}
+                onChange={handleChange}
+                required
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                placeholder="Ej: AB123CD"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tag UHF
+            </label>
+            <div className="relative">
+              <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                name="tag_uhf"
+                value={formData.tag_uhf}
+                onChange={handleChange}
+                required
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                placeholder="Ej: TAG001"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Marca
+            </label>
+            <div className="relative">
+              <CircleStar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                name="marca"
+                value={formData.marca}
+                onChange={handleChange}
+                required
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                placeholder="Ej: Mercedes"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Modelo
+            </label>
+            <div className="relative">
+              <Puzzle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                name="modelo"
+                value={formData.modelo}
+                onChange={handleChange}
+                required
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                placeholder="Ej: Benz O500U"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Capacidad
+            </label>
+            <div className="relative">
+              <Users2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="number"
+                name="capacidad"
+                value={formData.capacidad}
+                onChange={handleChange}
+                required
+                min={0}
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+                placeholder="Ej: 45"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Empresa
+            </label>
+            <div className="relative">
+              <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <select
+                name="empresa_id"
+                value={formData.empresa_id}
+                onChange={handleChange}
+                required
+                className="w-full pl-11 pr-12 py-3 border-2 border-gray-400 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200"
+              >
+                <option value="">Seleccionar empresa...</option>
+                {empresas.map((empresa) => (
+                  <option key={empresa.id} value={empresa.id}>
+                    {empresa.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2 px-4 border-2 border-gray-400 rounded-xl text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 py-2 px-4 bg-linear-to-r from-sky-600 to-sky-800 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? 'Guardando...' : (bus ? 'Actualizar' : 'Crear')}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

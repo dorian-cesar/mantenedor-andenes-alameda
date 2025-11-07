@@ -173,7 +173,7 @@ export default function EmpresasPage() {
                     <Building className="h-8 w-8 text-blue-600" />
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Gestión de Empresas</h1>
-                        <p className="text-gray-600">Administra las empresas en el sistema</p>
+                        <p className="text-gray-600">Gestiona las empresas en el sistema</p>
                     </div>
 
                     <button
@@ -242,7 +242,7 @@ export default function EmpresasPage() {
                                                     <div className="text-sm font-medium text-gray-900">{empresa.rut}</div>
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900">{empresa.direccion}</div>
+                                                    <div className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{empresa.direccion}</div>
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-medium text-gray-900">{empresa.telefono}</div>

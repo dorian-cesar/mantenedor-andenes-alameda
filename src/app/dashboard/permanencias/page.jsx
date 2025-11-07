@@ -73,7 +73,7 @@ export default function PermanenciasPage() {
         <div className="flex items-center gap-3">
           <Clock className="h-8 w-8 text-green-600" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Permanencias</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Permanencias (desarrollo)</h1>
             <p className="text-gray-600">Tiempo de estadía de los buses en el terminal</p>
           </div>
         </div>
