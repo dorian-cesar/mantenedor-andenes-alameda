@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Users, Edit, Trash2, Check, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
+import { Plus, Search, Users, Edit, Trash2, Check, ChevronLeft, ChevronRight, RefreshCcw, XIcon } from 'lucide-react';
 import UserService from '@/services/user.service';
 import Notification from '@/components/notification';
 import UserModal from '@/components/modals/userModal';
@@ -222,6 +222,7 @@ export default function UsuariosPage() {
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Usuario</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Correo</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Rol</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Estado</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Fecha</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Acciones</th>
                     </tr>
@@ -247,6 +248,17 @@ export default function UsuariosPage() {
                             {user.rol}
                           </span>
                         </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span
+                            className={
+                              `inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                            ${user.estado === 'activo'
+                                ? 'bg-emerald-200 text-emerald-800'
+                                : 'bg-orange-200 text-orange-800'
+                              }`}>
+                            {user.estado}
+                          </span>
+                        </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(user.creado_en).toLocaleDateString('es-ES')}
                         </td>
@@ -266,11 +278,11 @@ export default function UsuariosPage() {
                                 aria-label={`Desactivar ${user.nombre}`}
                                 title={`Desactivar ${user.nombre}`}
                               >
-                                <Trash2 className="h-5 w-5" />
+                                <XIcon className="h-5 w-5" />
                               </button>
                               : <button
                                 onClick={() => handleActiveUser(user)}
-                                className="text-blue-600 hover:text-blue-900 bg-blue-200 p-2 rounded-full cursor-pointer"
+                                className="text-emerald-800 hover:text-emerald-900 bg-emerald-200 p-2 rounded-full cursor-pointer"
                                 aria-label={`Activar ${user.nombre}`}
                                 title={`Activar ${user.nombre}`}
                               >
@@ -307,7 +319,7 @@ export default function UsuariosPage() {
                               : user.rol === 'administrador'
                                 ? 'bg-blue-200 text-blue-800'
                                 : 'bg-gray-200 text-black'}`}>
-                              {user.rol}
+                              {user.estado === 'activo' ? user.rol : `${user.rol} (inactivo)`}
                             </span>
                           </div>
                         </div>
@@ -320,7 +332,7 @@ export default function UsuariosPage() {
                       <div className="flex flex-col items-end gap-2 ml-2">
                         <button
                           onClick={() => handleEditUser(user)}
-                          className="p-2 rounded-md bg-blue-100 hover:bg-blue-200"
+                          className="p-2 rounded-md text-blue-600 hover:text-blue-900 bg-blue-200"
                           aria-label={`Editar ${user.nombre}`}
                         >
                           <Edit className="h-4 w-4 text-blue-600" />
@@ -329,15 +341,15 @@ export default function UsuariosPage() {
                         {user.estado === 'activo'
                           ? <button
                             onClick={() => handleDesactiveUser(user)}
-                            className="p-2 rounded-md bg-red-100 hover:bg-red-200"
+                            className="p-2 rounded-md text-red-600 hover:text-red-900 bg-red-200"
                             aria-label={`Desactivar ${user.nombre}`}
                             title={`Desactivar ${user.nombre}`}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <XIcon className="h-4 w-4" />
                           </button>
                           : <button
                             onClick={() => handleActiveUser(user)}
-                            className="p-2 rounded-md bg-blue-100 hover:bg-blue-200"
+                            className="p-2 rounded-md text-emerald-800 hover:text-emerald-900 bg-emerald-200"
                             aria-label={`Activar ${user.nombre}`}
                             title={`Activar ${user.nombre}`}
                           >

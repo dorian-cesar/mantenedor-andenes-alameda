@@ -85,12 +85,14 @@ export default function Login() {
 
       {/* Banner móvil (visible solo en sm/lg abajo) */}
       <div className="flex items-center gap-4 px-6 py-4 bg-linear-to-br from-gray-600 to-sky-800 text-white lg:hidden">
-        <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-          <Image src="/wit.png" alt="WIT Logo" width={40} height={40} className="filter brightness-0 invert" />
-        </div>
-        <div>
-          <h1 className="text-lg font-semibold">Sistema de Control</h1>
-          <p className="text-xs text-blue-100">Innovación con más de 15 años</p>
+        <div className="flex flex-col items-center">
+          <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
+            <Image src="/wit.png" alt="WIT Logo" width={40} height={40} className="filter brightness-0 invert" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold">Sistema de Control</h1>
+            <p className="text-xs text-blue-100">Innovación con más de 15 años</p>
+          </div>
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-    LayoutDashboard, Users, Settings, BarChart3, FileText,
+    LayoutDashboard, Building, Users, Settings, BarChart3, FileText,
     ChevronLeft, ChevronRight, CircleParking, Clock, Truck,
     Calendar, HelpCircle, Menu
 } from 'lucide-react';
@@ -24,6 +24,11 @@ export default function Sidebar({ isOpen: externalIsOpen, onToggle }) {
             name: 'Dashboard',
             href: '/dashboard',
             icon: LayoutDashboard,
+        },
+        {
+            name: 'Empresas',
+            href: '/dashboard/empresas',
+            icon: Building,
         },
         {
             name: 'Usuarios',
