@@ -41,7 +41,7 @@ class EmpresaService {
     }
 
     // 2/3. Listar Empresas - GET /api/empresas[?incluirInactivas=true]
-    static async getEmpresas(incluirInactivas = false) {
+    static async getEmpresas(incluirInactivas = false, extract = true) {
         try {
             const query = incluirInactivas ? '?incluirInactivas=true' : '';
             const response = await fetch(`${API_URL}empresas${query}`, {
@@ -58,9 +58,15 @@ class EmpresaService {
                 throw new Error(json.mensaje || 'Error al listar empresas');
             }
 
-            // Aquí devolvemos siempre el array (o [] si no viene)
-            const data = extractData(json);
-            return Array.isArray(data) ? data : (data ? [data] : []);
+            if (extract) {
+                const data = extractData(json);
+                return Array.isArray(data) ? data : (data ? [data] : []);
+                return data
+            } else {
+                const data = json;
+                return data
+            }
+
         } catch (error) {
             console.error('Error en getEmpresas:', error);
             throw error;

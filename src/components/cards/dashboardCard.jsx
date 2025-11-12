@@ -30,7 +30,7 @@ export function DashboardCard2({ link = "#", icon, title, description, color = "
     return (
         <Link href={link}>
             <div
-                className={`${colors.split(" ")[0]} border-3 ${colors.split(" ")[1]} rounded-2xl p-6 bg-pur cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col`}
+                className={`${colors.split(" ")[0]} border-3 ${colors.split(" ")[1]} rounded-xl p-6 bg-pur cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col`}
             >
                 <div className={`bg-linear-to-r ${colors.split(" ")[3]} ${colors.split(" ")[4]} text-white p-4 rounded-xl w-fit mb-4`}>
                     {icon}
